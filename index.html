@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>دليل تخصصي – Dallil Takhassusi | منصة اكتشاف التخصصات الجامعية</title>
+  <meta name="description" content="منصة ذكية تساعد الطالب على اكتشاف التخصص الجامعي المناسب له، وحساب نسب القبول والرسوم والأقساط، والمقارنة بين التخصصات ومساعد ذكاء اصطناعي">
+  <meta name="theme-color" content="#4F46E5">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="دليل تخصصي">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%234F46E5'/><path d='M256 96L64 192l192 96 160-80v128h32V192L256 96z' fill='%23ffffff'/><path d='M128 256v96c0 53 57.3 96 128 96s128-43 128-96v-96l-128 64-128-64z' fill='%23818CF8'/></svg>">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="splash-screen" onclick="this.style.display='none'">
+    <div class="splash-logo-anim">🎓</div>
+    <h1 class="splash-title">دليل تخصصي</h1>
+    <p class="splash-tagline">اكتشف تخصصك، وافهم مستقبلك.</p>
+  </div>
+
+  <!-- PWA Install Banner -->
+  <div id="pwa-install-banner" class="pwa-banner-card hidden">
+    <div>
+      <strong>📲 تثبيت تطبيق "دليل تخصصي"</strong>
+      <p style="font-size: 0.76rem; opacity: 0.85;">ثبّت التطبيق على شاشتك الرئيسية للوصول السريع بدون إنترنت</p>
+    </div>
+    <div style="display: flex; gap: 6px;">
+      <button id="btn-pwa-install" class="btn btn-primary btn-sm">تثبيت</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('pwa-install-banner').classList.add('hidden')">لاحقاً</button>
+    </div>
+  </div>
+
+  <!-- Main Viewport Container -->
+  <div class="app-viewport-wrapper">
+
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+      <div class="brand-wrapper" onclick="dallilApp.switchView('home')">
+        <div class="brand-logo-circle">🎓</div>
+        <div class="brand-text-block">
+          <span class="brand-title">دليل تخصصي</span>
+          <span class="brand-tagline">منصة التوجيه الأكاديمي</span>
+        </div>
+      </div>
+
+      <div class="app-bar-actions">
+        <button class="icon-button" onclick="dallilApp.toggleTheme()" title="تبديل المظهر (نهاري/ليلي)" id="btn-theme-quick">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <button class="icon-button" onclick="dallilApp.switchView('notifications')" title="الإشعارات">
+          <i class="fa-regular fa-bell"></i>
+          <span id="notif-badge-counter" class="badge-dot" style="display: none;">0</span>
+        </button>
+
+        <button class="icon-button" onclick="dallilApp.switchView('profile')" title="حسابي">
+          <i class="fa-regular fa-user"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Views Area -->
+    <main id="app-content">
+
+      <!-- ================= VIEW 1: HOME (الرئيسية) ================= -->
+      <section id="view-home" class="app-view active">
+        <!-- Welcome Block -->
+        <div class="home-welcome-box">
+          <h2 class="welcome-greeting">مرحبًا بك، <span id="home-welcome-name">عزيزي الطالب</span> 👋</h2>
+          <p class="welcome-subtitle">ايش التخصص اللي يناسبك؟ دعنا نكتشفه معًا.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-wrapper">
+          <div class="search-input-group">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="home-search-input" class="search-field" placeholder="ابحث عن تخصص، كلية، أو سؤال..." onkeydown="if(event.key === 'Enter') { dallilApp.switchView('majors'); document.getElementById('majors-search-input').value = this.value; dallilApp.renderMajors(); }">
+          </div>
+        </div>
+
+        <!-- 6 Main Action Cards -->
+        <div class="quick-actions-grid">
+          <div class="action-card" onclick="dallilApp.switchView('majors')">
+            <div class="action-card-icon icon-majors"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="action-card-info">
+              <h4>استكشف التخصصات</h4>
+              <p>شروط، رسوم وخطط</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('quiz')">
+            <div class="action-card-icon icon-quiz"><i class="fa-solid fa-brain"></i></div>
+            <div class="action-card-info">
+              <h4>اكتشف تخصصي</h4>
+              <p>اختبار الميول والقدرات</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('admission-calc')">
+            <div class="action-card-icon icon-adm"><i class="fa-solid fa-calculator"></i></div>
+            <div class="action-card-info">
+              <h4>حاسبة القبول</h4>
+              <p>احسب أهليتك المبدئية</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('fees-calc')">
+            <div class="action-card-icon icon-fees"><i class="fa-solid fa-wallet"></i></div>
+            <div class="action-card-info">
+              <h4>حاسبة الرسوم</h4>
+              <p>جدولة الأقساط والتكلفة</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('compare')">
+            <div class="action-card-icon icon-compare"><i class="fa-solid fa-code-compare"></i></div>
+            <div class="action-card-info">
+              <h4>قارن التخصصات</h4>
+              <p>مقارنة شاملة جنباً لجنب</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('ai-chat')">
+            <div class="action-card-icon icon-ai"><i class="fa-solid fa-robot"></i></div>
+            <div class="action-card-info">
+              <h4>اسأل دليل AI</h4>
+              <p>مساعدك الأكاديمي الذكي</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popular Majors -->
+        <div class="section-header">
+          <h3 class="section-title"><i class="fa-solid fa-star text-warning"></i> تخصصات شائعة</h3>
+          <span class="section-link" onclick="dallilApp.switchView('majors')">عرض الكل</span>
+        </div>
+        <div id="home-popular-majors" class="majors-grid mb-4"></div>
+
+        <!-- Colleges Horizontal Rail -->
+        <div class="section-header mt-3">
+          <h3 class="section-title"><i class="fa-solid fa-building-columns text-primary-light"></i> الكليات</h3>
+          <span class="section-link" onclick="dallilApp.switchView('colleges')">جميع الكليات</span>
+        </div>
+        <div id="home-colleges-rail" class="horizontal-rail"></div>
+
+        <!-- Latest News & Announcements -->
+        <div class="section-header mt-3">
+          <h3 class="section-title"><i class="fa-solid fa-bullhorn text-accent"></i> آخر الأخبار والإعلانات</h3>
+        </div>
+        <div id="home-announcements-list"></div>
+      </section>
+
+      <!-- ================= VIEW 2: MAJORS (التخصصات) ================= -->
+      <section id="view-majors" class="app-view">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-graduation-cap"></i> التخصصات الجامعية</h2>
+            <p class="text-muted" style="font-size: 0.8rem;">استكشف معايير القبول والرسوم والخطط الدراسية</p>
+          </div>
+        </div>
+
+        <!-- Search input in Majors view -->
+        <div class="search-bar-wrapper mb-3">
+          <div class="search-input-group">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="majors-search-input" class="search-field" placeholder="ابحث عن اسم تخصص..." oninput="dallilApp.renderMajors()">
+          </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="filters-bar">
+          <button class="filter-chip active" data-category="all" onclick="dallilApp.renderMajors('all')">الكل</button>
+          <button class="filter-chip" data-category="it" onclick="dallilApp.renderMajors('it')">تقنية المعلومات</button>
+          <button class="filter-chip" data-category="engineering" onclick="dallilApp.renderMajors('engineering')">الهندسة</button>
+          <button class="filter-chip" data-category="health" onclick="dallilApp.renderMajors('health')">الطب والجراحه العامه</button>
+          <button class="filter-chip" data-category="business" onclick="dallilApp.renderMajors('business')">إدارة الأعمال</button>
+          <button class="filter-chip" data-category="design" onclick="dallilApp.renderMajors('design')">العمارة والتصميم</button>
+        </div>
+
+        <!-- Majors Cards Grid -->
+        <div id="majors-cards-grid" class="majors-grid"></div>
+      </section>
+
+      <!-- ================= VIEW 3: MAJOR DETAILS (تفاصيل التخصص) ================= -->
+      <section id="view-major-details" class="app-view">
+        <button class="back-link-btn" onclick="dallilApp.switchView('majors')">
+          <i class="fa-solid fa-arrow-right"></i> <span>العودة إلى التخصصات</span>
+        </button>
+
+        <!-- Hero Card -->
+        <div class="major-hero-banner">
+          <div class="hero-top-row">
+            <div>
+              <h2 id="major-detail-title" class="major-hero-title">الذكاء الاصطناعي</h2>
+              <div id="major-detail-en" class="major-hero-en">Artificial Intelligence</div>
+              <div id="major-detail-college" class="major-hero-college"></div>
+            </div>
+            <button id="major-detail-fav-btn" class="btn-fav" title="المفضلة"><i class="fa-regular fa-heart"></i></button>
+          </div>
+        </div>
+
+        <!-- Quick Stats Strip -->
+        <div class="quick-stats-bar">
+          <div class="stat-item-block">
+            <span class="stat-item-label">مدة الدراسة</span>
+            <span id="detail-stat-duration" class="stat-item-val">4 سنوات</span>
+          </div>
+          <div class="stat-item-block">
+            <span class="stat-item-label">الحد الأدنى</span>
+            <span id="detail-stat-gpa" class="stat-item-val font-highlight">88%</span>
+          </div>
+          <div class="stat-item-block">
+            <span class="stat-item-label">الرسوم السنوية</span>
+            <span id="detail-stat-fee" class="stat-item-val text-accent">1200 $</span>
+          </div>
+          <div class="stat-item-block">
+            <span class="stat-item-label">الساعات</span>
+            <span id="detail-stat-hours" class="stat-item-val">134</span>
+          </div>
+        </div>
+
+        <!-- 5 Tabs Navigation -->
+        <div class="major-tabs-nav">
+          <button class="major-tab-btn active" data-tab="overview" onclick="dallilApp.switchMajorTab('overview')">نظرة عامة</button>
+          <button class="major-tab-btn" data-tab="admission" onclick="dallilApp.switchMajorTab('admission')">القبول</button>
+          <button class="major-tab-btn" data-tab="fees" onclick="dallilApp.switchMajorTab('fees')">الرسوم</button>
+          <button class="major-tab-btn" data-tab="plan" onclick="dallilApp.switchMajorTab('plan')">الخطة</button>
+          <button class="major-tab-btn" data-tab="careers" onclick="dallilApp.switchMajorTab('careers')">الوظائف</button>
+        </div>
+
+        <!-- Tab Panes -->
+        <div id="detail-tab-overview" class="major-tab-pane active"></div>
+        <div id="detail-tab-admission" class="major-tab-pane"></div>
+        <div id="detail-tab-fees" class="major-tab-pane"></div>
+        <div id="detail-tab-plan" class="major-tab-pane"></div>
+        <div id="detail-tab-careers" class="major-tab-pane"></div>
+      </section>
+
+      <!-- ================= VIEW 4: COLLEGES (الكليات) ================= -->
+      <section id="view-colleges" class="app-view">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-building-columns"></i> الكليات الجامعية</h2>
+            <p class="text-muted" style="font-size: 0.8rem;">تصفح كليات الجامعة والأقسام الأكاديمية التابعة لها</p>
+          </div>
+        </div>
+        <div id="colleges-list-grid" class="majors-grid"></div>
+      </section>
+
+      <!-- ================= VIEW 5: ADMISSION CALCULATOR (حاسبة القبول) ================= -->
+      <section id="view-admission-calc" class="app-view">
+        <div class="calc-container">
+          <div class="calc-intro">
+            <h3>🧮 حاسبة القبول والأهلية</h3>
+            <p>أدخل معدلك في الثانوية والدرجات لاحتساب أهليتك المبدئية ومقارنتها بمعايير القبول للتخصص المطلوب.</p>
+          </div>
+
+          <form onsubmit="window.DallilCalculators.calculateAdmission(event)">
+            <div class="form-group">
+              <label><i class="fa-solid fa-graduation-cap"></i> التخصص المراد دراسته</label>
+              <select id="calc-admission-major" class="form-control" required></select>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-percent"></i> معدل الثانوية العامة (%)</label>
+              <input type="number" step="0.1" min="50" max="100" id="calc-admission-gpa" class="form-control" placeholder="مثال: 89.5" required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>درجة اختبار القدرات (اختياري)</label>
+                <input type="number" step="0.1" min="0" max="100" id="calc-admission-gat" class="form-control" placeholder="مثال: 82">
+              </div>
+              <div class="form-group">
+                <label>درجة التحصيلي (اختياري)</label>
+                <input type="number" step="0.1" min="0" max="100" id="calc-admission-tahsili" class="form-control" placeholder="مثال: 80">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-3">
+              <span>احسب أهليتي الآن</span>
+              <i class="fa-solid fa-calculator"></i>
+            </button>
+          </form>
+
+          <div id="calc-admission-result"></div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 6: FEES CALCULATOR (حاسبة الرسوم) ================= -->
+      <section id="view-fees-calc" class="app-view">
+        <div class="calc-container">
+          <div class="calc-intro">
+            <h3>💰 حاسبة الرسوم والأقساط</h3>
+            <p>اختر التخصص وطريقة السداد المفضلة لحساب تفصيل تكلفة الدراسة والسنوات والأقساط المتوقعة.</p>
+          </div>
+
+          <form onsubmit="window.DallilCalculators.calculateFees(event)">
+            <div class="form-group">
+              <label><i class="fa-solid fa-graduation-cap"></i> اختر التخصص</label>
+              <select id="calc-fee-major" class="form-control" required></select>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-coins"></i> خطة وتكرار الأقساط</label>
+              <select id="calc-fee-installments" class="form-control">
+                <option value="4" selected>4 أقساط متساوية سنويًا (قسط لكل ربع سنة)</option>
+                <option value="2">دفعتان فصليتان (قسط لكل ترم دراسي)</option>
+                <option value="1">دفعة سنوية واحدة (سداد مسبق)</option>
+                <option value="10">10 أقساط شهرية ميسرة</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-3">
+              <span>احسب الرسوم وجدول الأقساط</span>
+              <i class="fa-solid fa-wallet"></i>
+            </button>
+          </form>
+
+          <div id="calc-fee-result"></div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 7: COMPARISON (مقارنة التخصصات) ================= -->
+      <section id="view-compare" class="app-view">
+        <div class="compare-selector-box">
+          <div class="calc-intro">
+            <h3>🆚 قارن تخصصاتك جنباً إلى جنب</h3>
+            <p>اختر تخصصين أو 3 تخصصات لمقارنة مدة الدراسة، الرسوم، ومستوى الرياضيات والبرمجة والوظائف.</p>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label>التخصص الأول</label>
+              <select id="compare-select-1" class="form-control" onchange="window.DallilComparison.onSelectChange()"></select>
+            </div>
+            <div class="form-group">
+              <label>التخصص الثاني</label>
+              <select id="compare-select-2" class="form-control" onchange="window.DallilComparison.onSelectChange()"></select>
+            </div>
+            <div class="form-group">
+              <label>التخصص الثالث (اختياري)</label>
+              <select id="compare-select-3" class="form-control" onchange="window.DallilComparison.onSelectChange()"></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="compare-results-container"></div>
+      </section>
+
+      <!-- ================= VIEW 8: QUIZ (اكتشف تخصصي) ================= -->
+      <section id="view-quiz" class="app-view">
+        <div class="quiz-header-card">
+          <h2>🧠 اختبار اكتشف تخصصي</h2>
+          <p>أجب عن 6 أسئلة ذكية عن اهتماماتك وشغفك وميولك الدراسية وسنحلل لك أنسب التخصصات الجامعية بنسب مطابقة دقيقة وتفسير شامل.</p>
+          <div class="quiz-progress-bar-bg">
+            <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+          </div>
+          <div id="quiz-step-counter" style="font-size: 0.76rem; opacity: 0.85;">السؤال 1 من 6</div>
+        </div>
+
+        <div id="quiz-question-container"></div>
+      </section>
+
+      <!-- ================= VIEW 9: FAVORITES (المفضلة) ================= -->
+      <section id="view-favorites" class="app-view">
+        <div class="section-header">
+          <h2 class="section-title"><i class="fa-solid fa-heart text-danger"></i> تخصصاتي المحفوظة</h2>
+        </div>
+        <div id="favorites-list-grid"></div>
+      </section>
+
+      <!-- ================= VIEW 10: NOTIFICATIONS (الإشعارات) ================= -->
+      <section id="view-notifications" class="app-view">
+        <div class="section-header">
+          <h2 class="section-title"><i class="fa-solid fa-bell"></i> مركز الإشعارات والتنبيهات</h2>
+        </div>
+        <div id="notifications-list-container" class="majors-grid"></div>
+      </section>
+
+      <!-- ================= VIEW 11: PROFILE & SETTINGS (حسابي) ================= -->
+      <section id="view-profile" class="app-view">
+        <div class="detail-section text-center py-4">
+          <div style="font-size: 3.5rem; margin-bottom: 8px;">🎓</div>
+          <h3 id="profile-user-name">سلطان المطيري</h3>
+          <p id="profile-user-email" class="text-muted" style="font-size: 0.85rem;">student@dallil.edu</p>
+          <span id="profile-user-role" class="badge-tag mt-2">طالب جامعي 🎓</span>
+        </div>
+
+        <div class="quick-actions-grid mt-3">
+          <div class="action-card" onclick="dallilApp.switchView('favorites')">
+            <div class="action-card-icon" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;"><i class="fa-solid fa-heart"></i></div>
+            <div class="action-card-info">
+              <h4>المفضلة</h4>
+              <p><span id="profile-fav-count">0</span> تخصصات</p>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="dallilApp.switchView('quiz')">
+            <div class="action-card-icon" style="background: rgba(16, 185, 129, 0.15); color: #10B981;"><i class="fa-solid fa-brain"></i></div>
+            <div class="action-card-info">
+              <h4>نتائج اختباري</h4>
+              <p><span id="profile-quiz-count">0</span> اختبارات</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Portal Launcher Button (visible for admin) -->
+        <div id="profile-admin-link" class="action-card mt-2" style="border-color: var(--primary); background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), transparent); cursor: pointer;" onclick="dallilApp.switchView('admin')">
+          <div class="action-card-icon icon-ai"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="action-card-info">
+            <h4 style="color: var(--primary-light);">🛡️ لوحة تحكم الإدارة (Admin Dashboard)</h4>
+            <p>إدارة الكليات والتخصصات وتعديل الرسوم والقبول</p>
+          </div>
+        </div>
+
+        <!-- Settings List -->
+        <div class="detail-section mt-3">
+          <h4><i class="fa-solid fa-gear"></i> إعدادات التطبيق والحساب</h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button id="btn-toggle-theme" class="btn btn-secondary btn-block" onclick="dallilApp.toggleTheme()">
+              <i class="fa-solid fa-moon"></i> <span>تبديل الوضع الليلي / النهاري</span>
+            </button>
+
+            <button class="btn btn-secondary btn-block" onclick="dallilApp.openAuthModal('admin')">
+              <i class="fa-solid fa-user-shield"></i> <span>تسجيل الدخول كمسؤول (Admin)</span>
+            </button>
+
+            <button class="btn btn-secondary btn-block" onclick="dallilApp.openAuthModal('student')">
+              <i class="fa-solid fa-graduation-cap"></i> <span>تسجيل الدخول كطالب (Student)</span>
+            </button>
+
+            <button class="btn btn-outline btn-block text-danger mt-2" onclick="dallilApp.logout()">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>تسجيل الخروج</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 12: AI CHAT (دليل AI) ================= -->
+      <section id="view-ai-chat" class="app-view">
+        <div class="ai-chat-wrapper">
+          <div class="ai-chat-header-banner">
+            <div class="ai-avatar-glow"><i class="fa-solid fa-robot"></i></div>
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 800;">دليل AI</h3>
+              <p style="font-size: 0.78rem; opacity: 0.9;">مساعد ذكي متصل مباشرة بقاعدة بيانات التخصصات والرسوم والقبول</p>
+            </div>
+          </div>
+
+          <!-- Suggested Quick Prompts -->
+          <div class="ai-chips-rail">
+            <button class="ai-chip-prompt" onclick="dallilApp.sendQuickAIPrompt('كم رسوم تخصص الذكاء الاصطناعي؟')">كم رسوم الذكاء الاصطناعي؟</button>
+            <button class="ai-chip-prompt" onclick="dallilApp.sendQuickAIPrompt('هل تخصص الذكاء الاصطناعي صعب بالرياضيات؟')">هل AI صعب بالرياضيات؟</button>
+            <button class="ai-chip-prompt" onclick="dallilApp.sendQuickAIPrompt('قارن بين الذكاء الاصطناعي والأمن السيبراني')">قارن لي AI و Cyber</button>
+            <button class="ai-chip-prompt" onclick="dallilApp.sendQuickAIPrompt('هل معدلي 85% يؤهلني لهندسة البرمجيات؟')">هل معدلي 85% يؤهلني؟</button>
+            <button class="ai-chip-prompt" onclick="dallilApp.sendQuickAIPrompt('ما أفضل تخصص يناسبني؟')">ما أفضل تخصص يناسبني؟</button>
+          </div>
+
+          <!-- Messages Scroll Area -->
+          <div id="ai-messages-container" class="ai-messages-scroll-area">
+            <div class="ai-bubble ai-bubble-assistant">
+              <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+              <div class="ai-text-content">
+                مرحبًا بك! أنا <strong>"دليل AI"</strong>، مستشارك الأكاديمي الذكي 🎓.<br>
+                أنا متصل مباشرة ببيانات الجامعة لمعرفة الرسوم الحالية، متطلبات القبول، كثافة الرياضيات والبرمجة، والخطط الدراسية.<br><br>
+                كيف أقدر أساعدك اليوم في رحلتك الجامعية؟
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <div class="ai-chat-input-bar">
+            <input type="text" id="ai-chat-input" class="ai-input-field" placeholder="اسأل عن أي تخصص، رسومه، أو صعوبته..." onkeydown="if(event.key === 'Enter') dallilApp.sendAIMessage()">
+            <button class="btn-ai-send" onclick="dallilApp.sendAIMessage()" title="إرسال">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 13: ADMIN DASHBOARD (لوحة التحكم) ================= -->
+      <section id="view-admin" class="app-view">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-shield-halved text-primary-light"></i> لوحة تحكم الإدارة</h2>
+            <p class="text-muted" style="font-size: 0.8rem;">تعديل التخصصات، الرسوم، معايير القبول والإعلانات في الوقت الفعلي</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="dallilApp.switchView('home')">العودة للتطبيق</button>
+        </div>
+
+        <div class="admin-nav-tabs">
+          <button class="admin-nav-btn active" data-tab="majors" onclick="DallilAdmin.switchTab('majors')"><i class="fa-solid fa-graduation-cap"></i> التخصصات</button>
+          <button class="admin-nav-btn" data-tab="colleges" onclick="DallilAdmin.switchTab('colleges')"><i class="fa-solid fa-building-columns"></i> الكليات</button>
+          <button class="admin-nav-btn" data-tab="announcements" onclick="DallilAdmin.switchTab('announcements')"><i class="fa-solid fa-bullhorn"></i> الإعلانات</button>
+          <button class="admin-nav-btn" data-tab="notifications" onclick="DallilAdmin.switchTab('notifications')"><i class="fa-solid fa-bell"></i> بث الإشعارات</button>
+          <button class="admin-nav-btn" data-tab="users" onclick="DallilAdmin.switchTab('users')"><i class="fa-solid fa-users"></i> المستخدمون</button>
+        </div>
+
+        <div id="admin-content-area"></div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Fixed) -->
+    <nav class="bottom-nav-bar">
+      <a href="#" class="nav-item active" data-view="home">
+        <i class="fa-solid fa-house"></i>
+        <span>الرئيسية</span>
+      </a>
+
+      <a href="#" class="nav-item" data-view="majors">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>التخصصات</span>
+      </a>
+
+      <a href="#" class="nav-item floating-ai" data-view="ai-chat">
+        <div class="nav-icon-bubble">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <span>دليل AI</span>
+      </a>
+
+      <a href="#" class="nav-item" data-view="quiz">
+        <i class="fa-solid fa-brain"></i>
+        <span>اكتشف</span>
+      </a>
+
+      <a href="#" class="nav-item" data-view="favorites">
+        <i class="fa-regular fa-heart"></i>
+        <span>المفضلة</span>
+      </a>
+
+      <a href="#" class="nav-item" data-view="profile">
+        <i class="fa-regular fa-user"></i>
+        <span>حسابي</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div id="onboarding-modal" class="app-modal-overlay hidden">
+    <div class="modal-dialog text-center">
+      <!-- Slide 1 -->
+      <div class="onboarding-slide active">
+        <div class="onboarding-icon-box" style="color: #818CF8;">🎓</div>
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">اكتشف تخصصك</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">اعرف التخصصات والكليات المناسبة لك وفق أحدث متطلبات سوق العمل.</p>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="onboarding-slide">
+        <div class="onboarding-icon-box" style="color: #34D399;">🧮</div>
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">احسب فرصتك</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">احسب أهليتك للقبول وتكلفة دراستك وجدولة الأقساط بدقة وشفافية.</p>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="onboarding-slide">
+        <div class="onboarding-icon-box" style="color: #F472B6;">🤖</div>
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">اسأل مساعدك الذكي</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">اسأل عن أي شيء يتعلق بالتخصصات والجامعة واحصل على إجابة ذكية ومفهومة.</p>
+      </div>
+
+      <!-- Dots Indicator -->
+      <div class="onboarding-dots">
+        <div class="dot-indicator active"></div>
+        <div class="dot-indicator"></div>
+        <div class="dot-indicator"></div>
+      </div>
+
+      <div class="onboarding-actions-row">
+        <button class="btn btn-outline" onclick="dallilApp.closeOnboarding()">تخطي</button>
+        <button id="onboarding-next-btn" class="btn btn-primary" onclick="dallilApp.nextOnboarding()">
+          <span>التالي</span>
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="app-modal-overlay hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>تسجيل الدخول إلى "دليل تخصصي"</h3>
+        <button class="modal-close-btn" onclick="dallilApp.closeAuthModal()">&times;</button>
+      </div>
+
+      <div style="background: var(--bg-card); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 0.8rem;">
+        <span style="font-weight: bold; color: var(--accent);">⚡ حسابات تجريبية سريعة بنقرة واحدة:</span>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="dallilApp.loginAs('student')">حساب طالب (Student)</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="dallilApp.loginAs('admin')">حساب مسؤول (Admin)</button>
+        </div>
+      </div>
+
+      <form onsubmit="dallilApp.submitLogin(event)">
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="auth-email" class="form-control" required value="student@dallil.edu">
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="auth-password" class="form-control" required value="Student@123456">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-3">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Generic Modal (Add/Edit) -->
+  <div id="admin-generic-modal" class="app-modal-overlay hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="admin-modal-title">نموذج إدارة البيانات</h3>
+        <button class="modal-close-btn" onclick="DallilAdmin.closeModal()">&times;</button>
+      </div>
+      <div id="admin-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="./js/db.js"></script>
+  <script src="./js/ai.js"></script>
+  <script src="./js/calculators.js"></script>
+  <script src="./js/quiz.js"></script>
+  <script src="./js/comparison.js"></script>
+  <script src="./js/admin.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
